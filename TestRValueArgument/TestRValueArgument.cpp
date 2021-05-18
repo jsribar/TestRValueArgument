@@ -34,9 +34,15 @@ void FuncConstRef(const MyClass& mc)
     std::cout << mc.a << std::endl;
 }
 
-void FuncRValueRef(MyClass&& mc)
+void FuncRValueRefWithMove(MyClass&& mc)
 {
     MyClass m = std::move(mc);
+    std::cout << m.a << std::endl;
+}
+
+void FuncRValueRefWithoutMove(MyClass&& mc)
+{
+    MyClass m = mc;
     std::cout << m.a << std::endl;
 }
 
@@ -51,11 +57,21 @@ void FuncValue2(MyClass mc)
     std::cout << m.a << std::endl;
 }
 
-class B
+class WithMove
 {
 public:
-    B(MyClass&& mc)
+    WithMove(MyClass&& mc)
         : m(std::move(mc))
+    {}
+private:
+    MyClass m;
+};
+
+class WithoutMove
+{
+public:
+    WithoutMove(MyClass&& mc)
+        : m(mc)
     {}
 private:
     MyClass m;
@@ -84,24 +100,20 @@ int main()
     FuncValue2(std::move(mc4));
 
     MyClass mc3;
-    std::cout << "FuncRValueRef\n";
-    FuncRValueRef(std::move(mc3));
+    std::cout << "FuncRValueRefWithoutMove\n";
+    FuncRValueRefWithoutMove(std::move(mc3));
 
-    std::cout << "FuncRValueRef\n";
-    FuncRValueRef(MyClass{});
+    MyClass mc5;
+    std::cout << "FuncRValueRefWithMove\n";
+    FuncRValueRefWithMove(std::move(mc5));
 
-    B b{ MyClass{} };
+    std::cout << "FuncRValueRefWithoutMove\n";
+    FuncRValueRefWithoutMove(MyClass{});
 
-    std::cout << "Hello World!\n";
+    std::cout << "FuncRValueRefWithMove\n";
+    FuncRValueRefWithMove(MyClass{});
+
+    WithoutMove wm0{ MyClass{} };
+
+    WithMove wm{ MyClass{} };
 }
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
