@@ -78,6 +78,37 @@ private:
 };
 
 
+class Base
+{
+public:
+    Base(MyClass mc) : mc(std::move(mc))
+    {
+    }
+
+    //Base(MyClass&& mc) : mc(std::move(mc))
+    //{
+    //}
+
+    MyClass mc;
+};
+
+class DerivedWithMove : public Base
+{
+public:
+    DerivedWithMove(MyClass mc) : Base(std::move(mc))
+    {
+    }
+};
+
+class DerivedWithForward : public Base
+{
+public:
+    DerivedWithForward(MyClass mc) : Base(std::forward<MyClass>(mc))
+    {
+    }
+};
+
+
 int main()
 {
     MyClass mc1;
@@ -116,4 +147,10 @@ int main()
     WithoutMove wm0{ MyClass{} };
 
     WithMove wm{ MyClass{} };
+
+    std::cout << "DerivedWithMove\n";
+    DerivedWithMove dwm{ mc1 };
+
+    std::cout << "DerivedWithForward\n";
+    DerivedWithForward dwf{ mc1 };
 }
